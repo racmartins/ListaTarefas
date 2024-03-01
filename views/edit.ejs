@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Editar Tarefa</title>
+  </head>
+  <body>
+    <h1>Editar Tarefa</h1>
+
+    <form method="POST" action="/update/<%= task.id %>">
+      <input
+        type="text"
+        name="user"
+        placeholder="Utilizador"
+        value="<%= task.user %>"
+        required
+      />
+      <input
+        type="text"
+        name="task"
+        placeholder="Tarefa"
+        value="<%= task.task %>"
+        required
+      />
+      <button type="submit">Atualizar Tarefa</button>
+    </form>
+  </body>
+</html>

@@ -15,7 +15,10 @@
 
     <ul>
       <% tasks.forEach(task => { %>
-      <li><strong><%= task.user %>:</strong> <%= task.task %></li>
+      <li>
+        <strong><%= task.user %>:</strong> <%= task.task %>
+        <a href="/edit/<%= task.id %>">Editar</a>
+      </li>
       <% }) %>
     </ul>
   </body>
