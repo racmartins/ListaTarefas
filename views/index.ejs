@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Lista de Tarefas</title>
+  </head>
+  <body>
+    <h1>Lista de Tarefas</h1>
+
+    <form method="POST" action="/add">
+      <input type="text" name="user" placeholder="Utilizador" required />
+      <input type="text" name="task" placeholder="Tarefa" required />
+      <button type="submit">Adicionar Tarefa</button>
+    </form>
+
+    <ul>
+      <% tasks.forEach(task => { %>
+      <li><strong><%= task.user %>:</strong> <%= task.task %></li>
+      <% }) %>
+    </ul>
+  </body>
+</html>
