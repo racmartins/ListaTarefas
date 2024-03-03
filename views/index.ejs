@@ -1,49 +1,77 @@
-<%- include('partials/header.ejs', { title: 'Lista de Tarefas' }) %>
-<body>
-  <div class="container">
-    <h1 class="my-4 text-center">Lista de Tarefas</h1>
-    <form method="POST" action="/add" class="mb-3">
-      <div class="input-group mb-3">
-        <input
-          type="text"
-          name="user"
-          placeholder="Utilizador"
-          class="form-control"
-          required
-        />
-        <input
-          type="text"
-          name="task"
-          placeholder="Tarefa"
-          class="form-control"
-          required
-        />
-        <button class="btn btn-primary" type="submit">Adicionar</button>
-      </div>
-    </form>
+<%- include('partials/header', { title: 'Lista de Tarefas' }) %>
 
-    <ul class="list-group">
-      <% tasks.forEach(task => { %>
-      <li
-        class="list-group-item d-flex justify-content-between align-items-center"
-      >
-        <div><strong><%= task.user %>:</strong> <%= task.task %></div>
-        <div class="task-item-actions">
-          <a
-            href="/edit/<%= task.id %>"
-            class="btn btn-outline-secondary btn-sm"
-            >Editar</a
-          >
-          <form method="POST" action="/delete/<%= task.id %>" class="d-inline">
-            <button type="submit" class="btn btn-outline-danger btn-sm">
-              Remover
+<div class="container py-5">
+  <h1 class="text-center mb-5">Gestão de Tarefas</h1>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h2 class="h4 mb-0">Lista de Tarefas</h2>
+        </div>
+        <ul class="list-group list-group-flush">
+          <% tasks.forEach(task => { %>
+          <li class="list-group-item">
+            <%= task.task %> -
+            <span class="badge rounded-pill bg-secondary"
+              ><%= task.status %></span
+            >
+            <% if (task.user) { %>
+            <small class="text-muted"
+              >(Atribuída a <%= task.user.name %>)</small
+            >
+            <% } %>
+          </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <h2 class="h4 mb-0">Adicionar Nova Tarefa</h2>
+        </div>
+        <div class="card-body">
+          <form action="/add" method="post">
+            <div class="mb-3">
+              <label for="task" class="form-label">Tarefa</label>
+              <input
+                type="text"
+                id="task"
+                name="task"
+                class="form-control"
+                placeholder="Descreva a tarefa"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="status" class="form-label">Status</label>
+              <input
+                type="text"
+                id="status"
+                name="status"
+                class="form-control"
+                placeholder="Status atual"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="userId" class="form-label">Atribuir a</label>
+              <select id="userId" name="userId" class="form-select">
+                <% users.forEach(user => { %>
+                <option value="<%= user.id %>"><%= user.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              Adicionar Tarefa
             </button>
           </form>
         </div>
-      </li>
-      <% }) %>
-    </ul>
+      </div>
+    </div>
   </div>
+</div>
 
-  <%- include('partials/footer.ejs') %>
-</body>
+<%- include('partials/footer') %>
