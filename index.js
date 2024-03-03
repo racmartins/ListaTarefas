@@ -1,26 +1,15 @@
-//Importar o módulo express
-const express = require("express");
+// Importar dependências
+const express = require("express"); //módulo express
+const connection = require("./database/database"); //módulo de conexão
 
-//Importar o módulo mysql2
-const mysql = require("mysql2");
-
-//Criar uma instância de express
+// Criar uma instância do Express
 const app = express();
 
-// Definição do motor de renderização ejs
+// Configurar o EJS como view engine
 app.set("view engine", "ejs");
 
 // Configurar o middleware para analisar dados de formulário
 app.use(express.urlencoded({ extended: false }));
-
-// Configurar conexão com a base de dados MySQL
-const connection = mysql.createConnection({
-  host: "localhost",
-  port: 8889,
-  user: "root",
-  password: "root",
-  database: "task_manager",
-});
 
 // Rota principal - exibir lista de tarefas
 app.get("/", (req, res) => {
@@ -79,6 +68,22 @@ app.post("/update/:id", (req, res) => {
       if (err) throw err;
 
       // Redirecionar para a página principal após a atualização
+      res.redirect("/");
+    }
+  );
+});
+// Rota para remover a tarefa
+app.post("/delete/:id", (req, res) => {
+  const taskId = req.params.id;
+
+  // Remover a tarefa da base de dados com base no ID fornecido
+  connection.query(
+    "DELETE FROM tasks WHERE id = ?",
+    [taskId],
+    (err, results) => {
+      if (err) throw err;
+
+      // Redirecionar para a página principal após a remoção
       res.redirect("/");
     }
   );

@@ -1,17 +1,24 @@
 {
-  "name": "lista_tarefas",
+  "name": "proj_listatarefas",
   "version": "1.0.0",
-  "description": "",
+  "description": "Gestão de uma lista de tarefas pelo utilizador (multi-utilizador)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "Gestão",
+    "Tarefas",
+    "users",
+    "mysql",
+    "express",
+    "ejs"
+  ],
+  "author": "Rui Martins",
   "license": "ISC",
   "dependencies": {
     "ejs": "^3.1.9",
     "express": "^4.18.2",
-    "mysql2": "^3.9.2"
+    "mysql2": "^3.3.1"
   }
 }

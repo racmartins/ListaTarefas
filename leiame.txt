@@ -1,0 +1,19 @@
+Criar Base de Dados:
+create database task_manager;
+
+Fornecer acesso à Base de dados:
+use task_manager; //dá acesso à BD
+
+Criar tabela na Base de dados:
+CREATE TABLE tasks (
+    id int NOT NULL AUTO_INCREMENT,
+    user varchar(50),
+    task varchar(255),
+    PRIMARY KEY (ID)
+);
+
+Apagar a Base de dados:
+drop database task_manager;
+
+Apagar a tabela:
+drop table tasks;
