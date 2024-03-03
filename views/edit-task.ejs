@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar Tarefa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="mb-4 text-center">Editar Tarefa</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form action="/tasks/edit/<%= task.id %>" method="POST" class="g-3">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Título:</label>
+                        <input type="text" id="title" name="title" class="form-control" value="<%= task.title %>" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descrição:</label>
+                        <textarea id="description" name="description" class="form-control" rows="4" required><%= task.description.trim() %></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status:</label>
+                        <select id="status" name="status" class="form-select" required>
+                            <option value="ativa" <%= task.status === 'ativa' ? 'selected' : '' %>>Ativa</option>
+                            <option value="pendente" <%= task.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
+                            <option value="cancelada" <%= task.status === 'cancelada' ? 'selected' : '' %>>Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="d-grid">
+                        <input type="submit" value="Guardar" class="btn btn-primary btn-block" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

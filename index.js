@@ -1,74 +1,220 @@
-// Importar dependências
 const express = require("express");
-const connection = require("./database/database"); //módulo de conexão
+const session = require("express-session");
+const bcrypt = require("bcrypt");
+const mysql = require("mysql2");
 
-// Criar uma instância do Express
 const app = express();
+const port = 3000;
 
-// Configurar o EJS como view engine
-app.set("view engine", "ejs");
+// Configuração da base de dados
+const db = mysql.createConnection({
+  host: "localhost",
+  port: 8889,
+  user: "root",
+  password: "root",
+  database: "task_manager",
+});
 
-// Configurar o middleware para analisar dados de formulário
+// Configuração do express-session
+app.use(
+  session({
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+// Configuração do body-parser
 app.use(express.urlencoded({ extended: false }));
 
-// Rota principal - exibe a lista de tarefas
-/* 
-Nesta versão, estamos a usar um LEFT JOIN entre as tabelas tasks e users na BD. 
-A consulta agora retorna os dados da tabela tasks juntamente com o nome do utilizador 
-(como user_name) correspondente ao user_id na tabela users. De seguida, mapeamos os 
-resultados para criar o array de tarefas com as informações necessárias, 
-incluindo o nome do utilizador atribuído 
-*/
+// Configuração do EJS como mecanismo de visualização
+app.set("view engine", "ejs");
+
+// Rota inicial
 app.get("/", (req, res) => {
-  connection.query(
-    "SELECT tasks.*, users.name AS user_name FROM tasks LEFT JOIN users ON tasks.user_id = users.id",
-    (err, results) => {
-      if (err) throw err;
-      const tasks = results.map((task) => ({
-        id: task.id,
-        task: task.task,
-        status: task.status, //pendente, completa
-        user: {
-          id: task.user_id,
-          name: task.user_name,
-        },
-      }));
+  res.render("login");
+});
 
-      // Mostra a lista de utilizadores
-      connection.query("SELECT * FROM users", (err, users) => {
-        if (err) throw err;
-        res.render("index", { tasks, users });
+// Rota de autenticação (de login)
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  const sql = "SELECT * FROM users WHERE username = ?";
+  db.query(sql, [username], (err, result) => {
+    if (err) {
+      throw err;
+    }
+    if (result.length > 0) {
+      const user = result[0];
+      bcrypt.compare(password, user.password, (err, isMatch) => {
+        if (err) {
+          throw err;
+        }
+        if (isMatch) {
+          req.session.loggedIn = true;
+          req.session.userId = user.id;
+          req.session.username = username;
+          res.redirect("/tasks");
+        } else {
+          res.redirect("/");
+        }
       });
-    }
-  );
-});
-
-// Rota para adicionar uma nova tarefa
-app.post("/add", (req, res) => {
-  const { task, status, userId } = req.body;
-  connection.query(
-    "INSERT INTO tasks (task, status, user_id) VALUES (?, ?, ?)",
-    [task, status, userId],
-    (err, results) => {
-      if (err) throw err;
+    } else {
       res.redirect("/");
     }
-  );
-});
-// Rota para associar uma tarefa a um utilizador
-app.post("/assign", (req, res) => {
-  const { userId, taskId } = req.body;
-  connection.query(
-    "UPDATE tasks SET user_id = ? WHERE id = ?",
-    [userId, taskId],
-    (err, results) => {
-      if (err) throw err;
-      res.redirect("/");
-    }
-  );
+  });
 });
 
-// Iniciar o servidor na porta 3000
-app.listen(3000, () => {
-  console.log("Servidor iniciado na porta 3000");
+// Rota de logout
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      throw err;
+    }
+    res.redirect("/");
+  });
+});
+
+// Rota de exibição do formulário de registo de utilizador
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+// Rota de registo de utilizador
+app.post("/register", (req, res) => {
+  const { username, password } = req.body;
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) {
+      throw err;
+    }
+    const user = { username, password: hash };
+    const sql = "INSERT INTO users SET ?";
+    db.query(sql, user, (err, result) => {
+      if (err) {
+        throw err;
+      }
+      console.log("Novo utilizador registado:", result);
+      res.redirect("/");
+    });
+  });
+});
+
+// Rota de visualização das tarefas
+app.get("/tasks", (req, res) => {
+  if (!req.session.loggedIn) {
+    res.redirect("/");
+    return;
+  }
+  const userId = req.session.userId;
+  const loggedIn = req.session.loggedIn;
+
+  const sqlTasks = "SELECT * FROM tasks";
+  const sqlUsers = "SELECT * FROM users";
+
+  db.query(sqlTasks, (err, tasks) => {
+    if (err) {
+      throw err;
+    }
+
+    db.query(sqlUsers, (err, users) => {
+      if (err) {
+        throw err;
+      }
+
+      db.query("SELECT * FROM users WHERE id = ?", [userId], (err, user) => {
+        if (err) {
+          throw err;
+        }
+
+        const username = user[0].username;
+
+        res.render("tasks", {
+          tasks: tasks,
+          users: users,
+          userId: userId, // Adicione esta linha
+          username: username,
+          loggedIn: loggedIn,
+        });
+      });
+    });
+  });
+});
+
+// Rota de adição de nova tarefa
+app.post("/tasks/add", (req, res) => {
+  if (!req.session.loggedIn) {
+    res.redirect("/");
+    return;
+  }
+  const { title, description, status } = req.body;
+  const task = { title, description, status, user_id: req.session.userId };
+  const sql = "INSERT INTO tasks SET ?";
+  db.query(sql, task, (err, result) => {
+    if (err) {
+      throw err;
+    }
+    console.log("Nova tarefa adicionada:", result);
+    res.redirect("/tasks");
+  });
+});
+
+// Rota de edição de tarefa
+app.get("/tasks/edit/:id", (req, res) => {
+  if (!req.session.loggedIn) {
+    res.redirect("/");
+    return;
+  }
+  const taskId = req.params.id;
+  const sql = "SELECT * FROM tasks WHERE id = ?";
+  db.query(sql, [taskId], (err, result) => {
+    if (err) {
+      throw err;
+    }
+    if (result.length === 0) {
+      res.redirect("/tasks");
+      return;
+    }
+    const task = result[0];
+    res.render("edit-task", { task });
+  });
+});
+
+// Rota de atualização de tarefa
+app.post("/tasks/edit/:id", (req, res) => {
+  if (!req.session.loggedIn) {
+    res.redirect("/");
+    return;
+  }
+  const taskId = req.params.id;
+  const { title, description, status } = req.body;
+  const sql =
+    "UPDATE tasks SET title = ?, description = ?, status = ? WHERE id = ?";
+  db.query(sql, [title, description, status, taskId], (err, result) => {
+    if (err) {
+      throw err;
+    }
+    console.log("Tarefa atualizada:", result);
+    res.redirect("/tasks");
+  });
+});
+
+// Rota de exclusão de tarefa
+app.get("/tasks/delete/:id", (req, res) => {
+  if (!req.session.loggedIn) {
+    res.redirect("/");
+    return;
+  }
+  const taskId = req.params.id;
+  const sql = "DELETE FROM tasks WHERE id = ?";
+  db.query(sql, [taskId], (err, result) => {
+    if (err) {
+      throw err;
+    }
+    console.log("Tarefa excluída:", result);
+    res.redirect("/tasks");
+  });
+});
+
+// Inicia o servidor
+app.listen(port, () => {
+  console.log(`Servidor a executar em http://localhost:${port}`);
 });

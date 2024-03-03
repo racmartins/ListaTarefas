@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestor de Tarefas</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-light">
+    <div class="container py-5">
+      <div class="col text-center">
+        <h1 class="mb-3">Bem-Vindo <%= username %></h1>
+        <a href="/logout" class="btn btn-danger btn-sm mb-4">Logout</a>
+      </div>
+      <% if (loggedIn) { %>
+      <div class="card shadow mb-4">
+        <div class="card-header">
+          <h2 class="h5 mb-0">Adicionar uma Nova Tarefa:</h2>
+        </div>
+        <div class="card-body">
+          <form action="/tasks/add" method="POST">
+            <div class="mb-3">
+              <label for="title" class="form-label">Título:</label>
+              <div class="input-group">
+                <span class="input-group-text"
+                  ><i class="bi bi-pencil-square"></i
+                ></span>
+                <input
+                  type="text"
+                  name="title"
+                  id="title"
+                  class="form-control"
+                  placeholder="Nome da Tarefa"
+                  required
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="description" class="form-label">Descrição:</label>
+              <textarea
+                name="description"
+                id="description"
+                class="form-control"
+                placeholder="Detalhes da Tarefa"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="status" class="form-label">Status:</label>
+              <select id="status" name="status" class="form-select">
+                <option value="ativa">Ativa</option>
+                <option value="pendente">Pendente</option>
+                <option value="cancelada">Cancelada</option>
+              </select>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">
+                Adicionar Tarefa
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <% } %> <% users.forEach(user => { %>
+      <div class="mb-4">
+        <h2 class="h5">Tarefas de <%= user.username %>:</h2>
+        <ul class="list-group">
+          <% tasks.forEach(task => { if (task.user_id === user.id) { %>
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <div>
+                <strong>Título:</strong> <%= task.title %><br />
+                <strong>Descrição:</strong> <%= task.description %>
+              </div>
+              <div class="ms-3">
+                <span
+                  class="badge <%= task.status === 'ativa' ? 'bg-success' : task.status === 'pendente' ? 'bg-warning text-dark' : 'bg-danger' %>"
+                >
+                  <%= task.status %>
+                </span>
+              </div>
+            </div>
+            <% if (loggedIn && task.user_id === userId) { %>
+            <div class="mt-2">
+              <a
+                href="/tasks/edit/<%= task.id %>"
+                class="btn btn-outline-secondary btn-sm"
+                >Editar</a
+              >
+              <a
+                href="/tasks/delete/<%= task.id %>"
+                class="btn btn-outline-danger btn-sm"
+                >Remover</a
+              >
+            </div>
+            <% } %>
+          </li>
+          <% } }); %>
+        </ul>
+      </div>
+      <% }); %>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
