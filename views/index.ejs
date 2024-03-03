@@ -1,25 +1,49 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Lista de Tarefas</title>
-  </head>
-  <body>
-    <h1>Lista de Tarefas</h1>
-
-    <form method="POST" action="/add">
-      <input type="text" name="user" placeholder="Utilizador" required />
-      <input type="text" name="task" placeholder="Tarefa" required />
-      <button type="submit">Adicionar Tarefa</button>
+<%- include('partials/header.ejs', { title: 'Lista de Tarefas' }) %>
+<body>
+  <div class="container">
+    <h1 class="my-4 text-center">Lista de Tarefas</h1>
+    <form method="POST" action="/add" class="mb-3">
+      <div class="input-group mb-3">
+        <input
+          type="text"
+          name="user"
+          placeholder="Utilizador"
+          class="form-control"
+          required
+        />
+        <input
+          type="text"
+          name="task"
+          placeholder="Tarefa"
+          class="form-control"
+          required
+        />
+        <button class="btn btn-primary" type="submit">Adicionar</button>
+      </div>
     </form>
 
-    <ul>
+    <ul class="list-group">
       <% tasks.forEach(task => { %>
-      <li>
-        <strong><%= task.user %>:</strong> <%= task.task %>
-        <a href="/edit/<%= task.id %>">Editar</a>
+      <li
+        class="list-group-item d-flex justify-content-between align-items-center"
+      >
+        <div><strong><%= task.user %>:</strong> <%= task.task %></div>
+        <div class="task-item-actions">
+          <a
+            href="/edit/<%= task.id %>"
+            class="btn btn-outline-secondary btn-sm"
+            >Editar</a
+          >
+          <form method="POST" action="/delete/<%= task.id %>" class="d-inline">
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+              Remover
+            </button>
+          </form>
+        </div>
       </li>
       <% }) %>
     </ul>
-  </body>
-</html>
+  </div>
+
+  <%- include('partials/footer.ejs') %>
+</body>
