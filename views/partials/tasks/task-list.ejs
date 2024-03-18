@@ -1,0 +1,38 @@
+<% users.forEach(user => { %>
+<div class="mb-4">
+  <h2 class="h5">Tarefas de <%= user.username %>:</h2>
+  <ul class="list-group">
+    <% tasks.forEach(task => { if (task.user_id === user.id) { %>
+    <li class="list-group-item">
+      <div class="d-flex justify-content-between">
+        <div>
+          <strong>Título:</strong> <%= task.title %><br />
+          <strong>Descrição:</strong> <%= task.description %>
+        </div>
+        <div class="ms-3">
+          <span
+            class="badge <%= task.status === 'ativa' ? 'bg-success' : task.status === 'pendente' ? 'bg-warning text-dark' : 'bg-danger' %>"
+          >
+            <%= task.status %>
+          </span>
+        </div>
+      </div>
+      <% if (loggedIn && task.user_id === userId) { %>
+      <div class="mt-2">
+        <a
+          href="/tasks/edit/<%= task.id %>"
+          class="btn btn-outline-secondary btn-sm"
+          >Editar</a
+        >
+        <a
+          href="/tasks/delete/<%= task.id %>"
+          class="btn btn-outline-danger btn-sm"
+          >Remover</a
+        >
+      </div>
+      <% } %>
+    </li>
+    <% } }); %>
+  </ul>
+</div>
+<% }); %>
