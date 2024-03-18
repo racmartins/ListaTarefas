@@ -1,0 +1,51 @@
+<% if (loggedIn) { %>
+<div class="card shadow mb-4">
+  <div class="card-header">
+    <h2 class="h5 mb-0">Adicionar uma Nova Tarefa:</h2>
+  </div>
+  <div class="card-body">
+    <form action="/tasks/add" method="POST">
+      <div class="mb-3">
+        <label for="title" class="form-label">Título:</label>
+        <div class="input-group">
+          <span class="input-group-text"
+            ><i class="bi bi-pencil-square"></i
+          ></span>
+          <input
+            type="text"
+            name="title"
+            id="title"
+            class="form-control"
+            placeholder="Nome da Tarefa"
+            required
+          />
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Descrição:</label>
+        <textarea
+          name="description"
+          id="description"
+          class="form-control"
+          placeholder="Detalhes da Tarefa"
+          rows="3"
+          required
+        ></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="status" class="form-label">Status:</label>
+        <select id="status" name="status" class="form-select">
+          <option value="ativa">Ativa</option>
+          <option value="pendente">Pendente</option>
+          <option value="cancelada">Cancelada</option>
+        </select>
+      </div>
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-primary">Adicionar Tarefa</button>
+      </div>
+    </form>
+  </div>
+</div>
+<% } %> <% if (typeof(errorMessage) !== 'undefined' && errorMessage) { %>
+<div class="alert alert-danger" role="alert"><%= errorMessage %></div>
+<% } %>

@@ -16,12 +16,12 @@
         <div class="col-md-6">
           <div class="card border-danger shadow">
             <div class="card-header bg-danger text-white">
-              <h1 class="card-title">Delete Task</h1>
+              <h1 class="card-title">Excluír Tarefa</h1>
             </div>
             <div class="card-body text-center">
               <p class="card-text">
-                Are you sure you want to delete the task with ID <%= task.id %>?
-                This action cannot be undone.
+                Tem a certeza que desja excluír a tarefa com o ID <%= task.id
+                %>? Esta ação não pode ser desfeita.
               </p>
               <form action="/tasks/delete/<%= task.id %>" method="POST">
                 <button type="submit" class="btn btn-danger">Delete</button>
